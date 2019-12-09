@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "847797200038",
+    "firebase_url": "https://tesisegnalazioni.firebaseio.com",
+    "project_id": "tesisegnalazioni",
+    "storage_bucket": "tesisegnalazioni.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847797200038:android:899a14cc39adf4cac70067",
+        "android_client_info": {
+          "package_name": "com.example.tesi_segnalazioni"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "847797200038-kh9s1vu7n74o0slr4ftfaq7c3gs2jf0p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tesi_segnalazioni",
+            "certificate_hash": "f6e524b22e167f2327bc7c4959be129fae12f7fe"
+          }
+        },
+        {
+          "client_id": "847797200038-6ssvvg6rfe0ltssoc9b425lsnelvem8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-2l10T6rf-C5b05TRL12Pb4kLG8OxXZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847797200038-6ssvvg6rfe0ltssoc9b425lsnelvem8l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
