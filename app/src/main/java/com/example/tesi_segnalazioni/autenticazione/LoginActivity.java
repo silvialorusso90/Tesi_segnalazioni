@@ -1,8 +1,5 @@
 package com.example.tesi_segnalazioni.autenticazione;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +7,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.tesi_segnalazioni.MainActivity;
+import com.example.tesi_segnalazioni.MapsActivity;
 import com.example.tesi_segnalazioni.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -55,11 +56,16 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
 
             //prendo il campo email dell'utente loggato
-            String email = user.getEmail();
+            //String email = user.getEmail();
 
             //vado in MainActivity
-            Intent i = new Intent(this, MainActivity.class);
+            /*Intent i = new Intent(this, MainActivity.class);
             i.putExtra("msg", email);
+            finish();
+            startActivity(i);
+
+             */
+            Intent i = new Intent(this, MapsActivity.class);
             finish();
             startActivity(i);
 

@@ -2,7 +2,12 @@ package com.example.tesi_segnalazioni;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,16 +16,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.tesi_segnalazioni.autenticazione.LoginActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
-
-    Button button;
 
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
@@ -32,14 +37,16 @@ public class MainActivity extends AppCompatActivity {
         updateUI();
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
         setContentView(R.layout.activity_main);
 
+        FloatingActionButton fab = findViewById(R.id.FAB);
+
         //Riceve i dati dell'intent ed estrarli con il metodo getExtras()
+
         Bundle b = getIntent().getExtras();
         String extra = b.getString("msg");
 
@@ -49,7 +56,25 @@ public class MainActivity extends AppCompatActivity {
 
         setTitle(mAuth.getCurrentUser().getDisplayName());
 
-        button = (Button)findViewById(R.id.button);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //prendo l'utente corrente
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                //prendo il campo email dell'utente loggato
+                String nome = user.getDisplayName();
+                String email = user.getEmail();
+
+                Intent i = new Intent(MainActivity.this, NavigationActivity.class);
+                i.putExtra("name", nome);
+                i.putExtra("email", email);
+                startActivity(i);
+            }
+        });
+
     }
 
     @Override
@@ -77,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
 
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -99,11 +122,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void mappa(View view) {
-        /*Intent i = new Intent(this, MapsActivity.class);
-        finish();
-        startActivity(i);
-
-         */
-    }
 }
