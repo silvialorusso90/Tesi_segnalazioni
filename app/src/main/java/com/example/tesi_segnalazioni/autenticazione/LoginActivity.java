@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tesi_segnalazioni.MainActivity;
 import com.example.tesi_segnalazioni.MapsActivity;
+import com.example.tesi_segnalazioni.NavigationActivity;
 import com.example.tesi_segnalazioni.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -56,18 +57,22 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
 
             //prendo il campo email dell'utente loggato
-            //String email = user.getEmail();
+            String email = user.getEmail();
             String name = user.getDisplayName();
 
             //vado in MainActivity
             /*Intent i = new Intent(this, MainActivity.class);
-            i.putExtra("msg", email);
+            i.putExtra("msg", name);
             finish();
             startActivity(i);
 
              */
-            Intent i = new Intent(this, MapsActivity.class);
+
+
+
+            Intent i = new Intent(this, NavigationActivity.class);
             i.putExtra("name", name);
+            i.putExtra("email", email);
             finish();
             startActivity(i);
 

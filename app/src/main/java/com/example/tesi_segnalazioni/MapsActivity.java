@@ -85,6 +85,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        /*
         FloatingActionButton fab = findViewById(R.id.grav);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .setAction("Action", null).show();
             }
         });
+         */
     }
 
 

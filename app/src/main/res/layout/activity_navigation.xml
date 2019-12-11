@@ -8,10 +8,12 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
     <include
         layout="@layout/app_bar_navigation"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -23,3 +25,4 @@
         app:menu="@menu/activity_navigation_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
+    <!-- esempio di commento -->
