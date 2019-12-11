@@ -36,9 +36,6 @@ public class NavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
-
-
-
         setSupportActionBar(toolbar);
 
         Bundle b = getIntent().getExtras();

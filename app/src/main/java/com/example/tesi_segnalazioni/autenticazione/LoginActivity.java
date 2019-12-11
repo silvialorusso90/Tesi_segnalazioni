@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
             //prendo il campo email dell'utente loggato
             //String email = user.getEmail();
+            String name = user.getDisplayName();
 
             //vado in MainActivity
             /*Intent i = new Intent(this, MainActivity.class);
@@ -66,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
 
              */
             Intent i = new Intent(this, MapsActivity.class);
+            i.putExtra("name", name);
             finish();
             startActivity(i);
 

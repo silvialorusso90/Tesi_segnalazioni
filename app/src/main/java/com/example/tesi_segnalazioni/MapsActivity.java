@@ -1,12 +1,15 @@
 package com.example.tesi_segnalazioni;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.tesi_segnalazioni.autenticazione.LoginActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,13 +27,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
     LocationManager locationManager;
     LocationListener locationListener;
+    private FirebaseAuth mAuth;
 
     /**
      *
@@ -50,9 +57,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        updateUI();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        Bundle b = getIntent().getExtras();
+        String name = b.getString("name");
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        toolbar.setTitle(mAuth.getCurrentUser().getDisplayName());
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -142,5 +169,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
+    }
+
+    private void updateUI() {
+        //Se l'utente è loggato andare in MainActivity
+
+        //prendo l'utente corrente
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        //verifica se c'è un utente loggato
+        if (currentUser == null) {
+
+            //vado in LoginActivity
+            Intent intent = new Intent(this, LoginActivity.class);
+            finish();
+            startActivity(intent);
+
+        }
     }
 }
