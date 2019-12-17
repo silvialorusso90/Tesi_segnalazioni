@@ -42,7 +42,7 @@
             android:label="Registrazione" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".autenticazione.LoginActivity"
             android:label="Login">

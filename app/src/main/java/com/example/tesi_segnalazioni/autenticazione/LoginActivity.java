@@ -9,9 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.tesi_segnalazioni.MainActivity;
-import com.example.tesi_segnalazioni.MapsActivity;
 import com.example.tesi_segnalazioni.NavigationActivity;
 import com.example.tesi_segnalazioni.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
             String name = user.getDisplayName();
 
             //vado in MainActivity
+
             /*Intent i = new Intent(this, MainActivity.class);
             i.putExtra("msg", name);
             finish();
@@ -75,6 +73,10 @@ public class LoginActivity extends AppCompatActivity {
             i.putExtra("email", email);
             finish();
             startActivity(i);
+
+
+
+
 
         }
 
