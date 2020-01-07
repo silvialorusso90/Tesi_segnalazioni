@@ -1,0 +1,9 @@
+<resources>
+    <string-array name="gravita_incidente">
+        <item></item>
+        <item>Lieve</item>
+        <item>Moderata</item>
+        <item>Grave</item>
+        <item>Gravissima</item>
+    </string-array>
+</resources>

@@ -9,39 +9,64 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.tesi_segnalazioni.BottomSheet;
+import com.example.tesi_segnalazioni.LocationHelper;
 import com.example.tesi_segnalazioni.R;
+import com.example.tesi_segnalazioni.UserInformation;
+import com.example.tesi_segnalazioni.segnalazioni.IncidenteActivity;
 import com.example.tesi_segnalazioni.ui.home.HomeViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
 
 
-public class GalleryFragment extends Fragment implements OnMapReadyCallback, BottomSheet.BottomSheetListener {
+public class GalleryFragment extends Fragment implements OnMapReadyCallback{
 
     private HomeViewModel homeViewModel;
     private GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
     View mView;
+    float latitude, longitude;
+    private int zoom = 8;
 
-    private TextView mTextview;
+    DatabaseReference myRef;
+
+    List<LocationHelper>lLocation;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -66,20 +91,53 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback, Bot
                 .findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
 
+        myRef = FirebaseDatabase.getInstance().getReference();
+
+
         FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-                 */
+                        .setAction("Action", null).show();*/
 
                 BottomSheet button = new BottomSheet();
                 button.show(getFragmentManager(), "open");
 
             }
         });
+
+        /*
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //lLocation.clear();
+                for (DataSnapshot child : dataSnapshot.child("Incidenti").getChildren()) {
+                    //String key = obj.getKey();
+                    LocationHelper helper = dataSnapshot.getValue(LocationHelper.class);
+                    String lat = child.child("latitude").getValue().toString();
+                    float flLat = Float.parseFloat(lat);
+
+                    String lon = child.child("longitude").getValue().toString();
+                    float flLon = Float.parseFloat(lon);
+
+                    LatLng incidente = new LatLng(flLat, flLon);
+                    mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
+
+                    //if (helper != null) lLocation.add(helper);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+         */
+
+
         return mView;
     }
 
@@ -87,20 +145,125 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback, Bot
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        //lHelper = new ArrayList<>();
         mMap = googleMap;
         MapsInitializer.initialize(getContext());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(final Location location) {
+                latitude = (float) location.getLatitude();
+                longitude = (float) location.getLongitude();
+
+                LocationHelper helper = new LocationHelper(latitude, longitude);
+
+                FirebaseDatabase.getInstance().getReference("Current Location")
+                        .setValue(helper).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if(task.isSuccessful())
+                            Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+
+                /*
+                myRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+
+                        LocationHelper helper = dataSnapshot.getValue(LocationHelper.class);
+
+                        LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                 */
+
+                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot child : dataSnapshot.child("Incidenti").getChildren()) {
+                            String key = child.getKey();
+                            /*LocationHelper helper = dataSnapshot.getValue(LocationHelper.class);
+                            LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
+
+                             */
+
+                            String lat = child.child("latitude").getValue().toString();
+                            float flLat = Float.parseFloat(lat);
+
+                            String lon = child.child("longitude").getValue().toString();
+                            float flLon = Float.parseFloat(lon);
+
+                            LatLng incidente = new LatLng(flLat, flLon);
+                            //mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
+
+                            mMap.addMarker(new MarkerOptions().position(incidente).title("incidente").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+
+
 
                 LatLng posizioneutente = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.clear();
-
-                //LatLng sydney = new LatLng(-34, 151);
                 mMap.addMarker(new MarkerOptions().position(posizioneutente).title("Posizione utente"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posizioneutente, 15));
 
+
+
+                /*LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
+
+                 */
+                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(incidente, zoom));
+
+
+
+
+
+                //TODO: leggere da "incidenti" e posizionare i marker
+
+                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.incidente);
 
             }
 
@@ -120,6 +283,9 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback, Bot
             }
         };
 
+
+
+
         //Se SDK < 23 (nel nostro caso non è possibile perchè abbiamo messo 23 come api minima)
         if(Build.VERSION.SDK_INT >= 23){
             //chiediamo l'aggiornamento
@@ -138,7 +304,7 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback, Bot
                 LatLng posizioneutente = new LatLng(ultima_posizione.getLatitude(), ultima_posizione.getLongitude());
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(posizioneutente).title("La mia ultima posizione"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posizioneutente, 15));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posizioneutente, zoom));
             }
 
         }
@@ -150,11 +316,6 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback, Bot
 
     }
 
-    @Override
-    public void onButtonClicked(String text) {
-        mTextview.setText(text);
-
-    }
 }
 /*
 public class GalleryFragment extends Fragment {

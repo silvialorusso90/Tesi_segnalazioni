@@ -2,6 +2,7 @@ package com.example.tesi_segnalazioni;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,36 +12,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import com.example.tesi_segnalazioni.segnalazioni.AutoveloxActivity;
+import com.example.tesi_segnalazioni.segnalazioni.IncidenteActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class BottomSheet extends BottomSheetDialogFragment {
 
-    private BottomSheetListener mListener;
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.bottom_sheet, container, false);
 
-        Button btn = v.findViewById(R.id.btn);
-        Button btn1 = v.findViewById(R.id.btn1);
+        ImageView incidente = v.findViewById(R.id.incidente);
+        ImageView autovelox = v.findViewById(R.id.autovelox);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        incidente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onButtonClicked("hai premuto il 1 bottone");
-                dismiss();
+                Intent i = new Intent(getContext(), IncidenteActivity.class);
+                startActivity(i);
+
             }
         });
 
-        btn1.setOnClickListener(new View.OnClickListener() {
+        autovelox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onButtonClicked("hai premuto il 2 bottone");
-                dismiss();
+                Intent i = new Intent(getContext(), AutoveloxActivity.class);
+                startActivity(i);
 
             }
         });
@@ -48,23 +50,6 @@ public class BottomSheet extends BottomSheetDialogFragment {
 
     }
 
-    public interface BottomSheetListener{
-        void onButtonClicked(String text);
-
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        try {
-            mListener = (BottomSheetListener) context;
-        }catch (ClassCastException e){
-            throw new ClassCastException(context.toString() + " must implement BottomSheetListener");
-
-        }
-
-    }
 
     public BottomSheet() {
         // Required empty public constructor

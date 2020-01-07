@@ -21,7 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.widget.TextView;
 
-public class NavigationActivity extends AppCompatActivity implements BottomSheet.BottomSheetListener{
+public class NavigationActivity extends AppCompatActivity{
 
     private static final String TAG = "NavigationActivity";
 
@@ -129,8 +129,4 @@ public class NavigationActivity extends AppCompatActivity implements BottomSheet
     }
 
 
-    @Override
-    public void onButtonClicked(String text) {
-
-    }
 }
