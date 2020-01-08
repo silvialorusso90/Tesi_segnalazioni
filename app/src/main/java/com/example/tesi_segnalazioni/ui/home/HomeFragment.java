@@ -4,15 +4,18 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.tesi_segnalazioni.BottomSheet;
 import com.example.tesi_segnalazioni.LocationHelper;
 import com.example.tesi_segnalazioni.R;
+import com.example.tesi_segnalazioni.segnalazioni.IncidenteActivity;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,7 +52,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
+
 public class HomeFragment extends Fragment implements OnMapReadyCallback{
+
+    private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
 
     private HomeViewModel homeViewModel;
     private GoogleMap mMap;
@@ -57,6 +68,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
     View mView;
     float latitude, longitude;
     private int zoom = 8;
+
+    ImageButton mVoicebtn;
 
     DatabaseReference myRef;
 
@@ -77,7 +90,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
-        mView = inflater.inflate(R.layout.fragment_gallery, container, false);
+        mView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        mVoicebtn = mView.findViewById(R.id.voiceBtn);
 
         final SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map1);
@@ -94,6 +109,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
 
                 BottomSheet button = new BottomSheet();
                 button.show(getFragmentManager(), "open");
+            }
+        });
+
+        mVoicebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speack();
             }
         });
 
@@ -128,9 +150,56 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
 
             }
         });
+
+
         return mView;
     }
 
+    private void speack() {
+        //intent to show speech to text dialog
+        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Dimmi qualcosa");
+
+        //start intent
+        try {
+            //no error
+            //show dialog
+            startActivityForResult(i, REQUEST_CODE_SPEECH_INPUT);
+
+        }catch (Exception e){
+            //error
+            Toast.makeText(getContext(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case REQUEST_CODE_SPEECH_INPUT:{
+                if(resultCode == RESULT_OK && null!=data){
+
+                    //get text array from voice intent
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                    //set to textview
+                    String voice = result.get(0);
+
+                    if(/*mTextTv.getText().toString()*/(voice.equals("Incidente")) || (voice.equals("incidente"))){
+                        Intent i = new Intent(getContext(), IncidenteActivity.class);
+                        startActivity(i);
+                    }
+                }
+                break;
+            }
+
+        }
+
+    }
 
 
     @Override
