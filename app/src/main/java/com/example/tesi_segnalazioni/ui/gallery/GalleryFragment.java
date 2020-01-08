@@ -9,15 +9,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -26,33 +23,26 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.tesi_segnalazioni.BottomSheet;
 import com.example.tesi_segnalazioni.LocationHelper;
 import com.example.tesi_segnalazioni.R;
-import com.example.tesi_segnalazioni.UserInformation;
-import com.example.tesi_segnalazioni.segnalazioni.IncidenteActivity;
 import com.example.tesi_segnalazioni.ui.home.HomeViewModel;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
-
 
 public class GalleryFragment extends Fragment implements OnMapReadyCallback{
 
@@ -65,8 +55,6 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
     private int zoom = 8;
 
     DatabaseReference myRef;
-
-    List<LocationHelper>lLocation;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -93,7 +81,6 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
 
         myRef = FirebaseDatabase.getInstance().getReference();
 
-
         FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,28 +90,31 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
 
                 BottomSheet button = new BottomSheet();
                 button.show(getFragmentManager(), "open");
-
             }
         });
 
-        /*
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //lLocation.clear();
+
                 for (DataSnapshot child : dataSnapshot.child("Incidenti").getChildren()) {
-                    //String key = obj.getKey();
-                    LocationHelper helper = dataSnapshot.getValue(LocationHelper.class);
-                    String lat = child.child("latitude").getValue().toString();
-                    float flLat = Float.parseFloat(lat);
+                    String key = child.getKey();
+                    LocationHelper helper = child.getValue(LocationHelper.class);
+                    LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
+                    if (helper.getGravita().equals("Lieve"))
+                        mMap.addMarker(new MarkerOptions().position(incidente).title("incidente " +
+                                helper.getGravita()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+                    else if(helper.getGravita().equals("Moderata"))
+                        mMap.addMarker(new MarkerOptions().position(incidente).title("incidente " +
+                                helper.getGravita()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    else if(helper.getGravita().equals("Grave"))
+                        mMap.addMarker(new MarkerOptions().position(incidente).title("incidente " +
+                                helper.getGravita()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                    else
+                        mMap.addMarker(new MarkerOptions().position(incidente).title("incidente " +
+                                helper.getGravita()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
-                    String lon = child.child("longitude").getValue().toString();
-                    float flLon = Float.parseFloat(lon);
-
-                    LatLng incidente = new LatLng(flLat, flLon);
-                    mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
-
-                    //if (helper != null) lLocation.add(helper);
+                    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.incidente);
                 }
 
             }
@@ -134,10 +124,6 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
 
             }
         });
-
-         */
-
-
         return mView;
     }
 
@@ -146,10 +132,14 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        //lHelper = new ArrayList<>();
         mMap = googleMap;
+        //mMap.setMyLocationEnabled(true);
         MapsInitializer.initialize(getContext());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+
+
+
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(final Location location) {
@@ -170,100 +160,9 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
 
 
 
-                /*
-                myRef.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-
-
-                        LocationHelper helper = dataSnapshot.getValue(LocationHelper.class);
-
-                        LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-                 */
-
-                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot child : dataSnapshot.child("Incidenti").getChildren()) {
-                            String key = child.getKey();
-                            /*LocationHelper helper = dataSnapshot.getValue(LocationHelper.class);
-                            LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
-
-                             */
-
-                            String lat = child.child("latitude").getValue().toString();
-                            float flLat = Float.parseFloat(lat);
-
-                            String lon = child.child("longitude").getValue().toString();
-                            float flLon = Float.parseFloat(lon);
-
-                            LatLng incidente = new LatLng(flLat, flLon);
-                            //mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
-
-                            mMap.addMarker(new MarkerOptions().position(incidente).title("incidente").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-
-
-
-
-
                 LatLng posizioneutente = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(posizioneutente).title("Posizione utente"));
-
-
-
-                /*LatLng incidente = new LatLng(helper.getLatitude(), helper.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(incidente).title("incidente"));
-
-                 */
-                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(incidente, zoom));
-
-
-
-
-
-                //TODO: leggere da "incidenti" e posizionare i marker
-
-                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.incidente);
 
             }
 
@@ -283,12 +182,8 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
             }
         };
 
-
-
-
         //Se SDK < 23 (nel nostro caso non è possibile perchè abbiamo messo 23 come api minima)
         if(Build.VERSION.SDK_INT >= 23){
-            //chiediamo l'aggiornamento
 
             //verifica permessi
             if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -298,13 +193,22 @@ public class GalleryFragment extends Fragment implements OnMapReadyCallback{
             }
             else {
                 //abbiamo già i permessi
+                //googleMap.setMyLocationEnabled(true);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
                 Location ultima_posizione = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                LatLng posizioneutente = new LatLng(ultima_posizione.getLatitude(), ultima_posizione.getLongitude());
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(posizioneutente).title("La mia ultima posizione"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posizioneutente, zoom));
+                if(ultima_posizione != null){
+                    LatLng posizioneutente = new LatLng(ultima_posizione.getLatitude(), ultima_posizione.getLongitude());
+                    mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(posizioneutente).title("Ultima posizione"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posizioneutente, zoom));
+
+                }
+                else
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+
+
             }
 
         }

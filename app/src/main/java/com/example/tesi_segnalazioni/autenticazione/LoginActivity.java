@@ -9,8 +9,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tesi_segnalazioni.MainActivity;
 import com.example.tesi_segnalazioni.NavigationActivity;
 import com.example.tesi_segnalazioni.R;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -45,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser currentUser) {
-        //Se l'utente è loggato andare in MainActivity
+        //Se l'utente è loggato andare in NavigationActivity
 
         //prendo l'utente corrente
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -57,26 +60,12 @@ public class LoginActivity extends AppCompatActivity {
             String email = user.getEmail();
             String name = user.getDisplayName();
 
-            //vado in MainActivity
-
-            /*Intent i = new Intent(this, MainActivity.class);
-            i.putExtra("msg", name);
-            finish();
-            startActivity(i);
-
-             */
-
-
-
-            Intent i = new Intent(this, NavigationActivity.class);
+            //vado in NavigationActivity
+            Intent i = new Intent(this, MainActivity.class);
             i.putExtra("name", name);
             i.putExtra("email", email);
             finish();
             startActivity(i);
-
-
-
-
 
         }
 

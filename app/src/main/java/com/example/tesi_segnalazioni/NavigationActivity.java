@@ -112,8 +112,7 @@ public class NavigationActivity extends AppCompatActivity{
     }
 
     private void updateUI() {
-        //Se l'utente è loggato andare in MainActivity
-
+        //se non c'è un utente loggato va in loginActivity
         //prendo l'utente corrente
         FirebaseUser currentUser = mAuth.getCurrentUser();
 

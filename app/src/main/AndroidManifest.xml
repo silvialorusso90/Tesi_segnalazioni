@@ -15,10 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".segnalazioni.AutoveloxActivity"
-            android:label="Autovelox"></activity>
-        <activity android:name=".segnalazioni.IncidenteActivity"
-            android:label="Incidente"/>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -30,11 +27,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+        <activity android:name=".MainActivity"
+            android:label="Main"
+            android:theme="@style/AppTheme.Fullscreen"/>
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".NavigationActivity"
             android:label="@string/title_activity_navigation"
@@ -43,8 +39,11 @@
             android:name=".autenticazione.RegisterActivity"
             android:label="Registrazione" />
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".segnalazioni.AutoveloxActivity"
+            android:label="Autovelox" />
+        <activity
+            android:name=".segnalazioni.IncidenteActivity"
+            android:label="Incidente" />
         <activity
             android:name=".autenticazione.LoginActivity"
             android:label="Login">
