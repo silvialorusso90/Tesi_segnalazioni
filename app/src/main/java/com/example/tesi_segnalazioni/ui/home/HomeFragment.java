@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
     LocationListener locationListener;
     View mView;
     float latitude, longitude;
-    private int zoom = 8;
+    private int zoom = 12;
 
     ImageButton mVoicebtn;
 
