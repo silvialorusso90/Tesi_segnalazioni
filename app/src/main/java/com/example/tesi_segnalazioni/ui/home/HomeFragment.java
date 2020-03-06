@@ -54,6 +54,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -67,7 +68,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
     LocationListener locationListener;
     View mView;
     float latitude, longitude;
-    private int zoom = 12;
+    private int zoom = 16;
 
     ImageButton mVoicebtn;
 
@@ -78,6 +79,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
             //aggiorna continuamente la posizione dell'utente
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -207,11 +209,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
 
         mMap = googleMap;
         //mMap.setMyLocationEnabled(true);
-        MapsInitializer.initialize(getContext());
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-
-
+        MapsInitializer.initialize(Objects.requireNonNull(getContext()));
+        locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
             @Override
@@ -226,8 +225,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        if(task.isSuccessful())
-                            Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
+                        //if(task.isSuccessful())
+                           // Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -236,6 +235,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
                 LatLng posizioneutente = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(posizioneutente).title("Posizione utente"));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posizioneutente, zoom));
 
             }
 

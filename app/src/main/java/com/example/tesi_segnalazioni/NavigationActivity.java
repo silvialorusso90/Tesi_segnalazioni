@@ -15,11 +15,18 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class NavigationActivity extends AppCompatActivity{
 
@@ -27,7 +34,7 @@ public class NavigationActivity extends AppCompatActivity{
 
     private AppBarConfiguration mAppBarConfiguration;
     private FirebaseAuth mAuth;
-
+    String name, email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,23 +44,13 @@ public class NavigationActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
 
         Bundle b = getIntent().getExtras();
-        String name = b.getString("name");
-        String email = b.getString("email");
+        name = b.getString("name");
+        email = b.getString("email");
 
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        //FloatingActionButton fab = findViewById(R.id.fab);
-        /*fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-         */
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -65,6 +62,9 @@ public class NavigationActivity extends AppCompatActivity{
         View headerViewEmail = navigationView.getHeaderView(0);
         TextView navHeaderEmail = (TextView) headerViewEmail.findViewById(R.id.nav_header_email);
         navHeaderEmail.setText(email);
+
+        View headerViewImg = navigationView.getHeaderView(0);
+        ImageView imgProfile = (ImageView) headerViewImg.findViewById(R.id.img_profile);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -128,4 +128,11 @@ public class NavigationActivity extends AppCompatActivity{
     }
 
 
+    public void profilo(View view) {
+        Intent intent = new Intent(this, ProfiloActivity.class);
+        intent.putExtra("nome", name);
+        intent.putExtra("email", email);
+        startActivity(intent);
+
+    }
 }

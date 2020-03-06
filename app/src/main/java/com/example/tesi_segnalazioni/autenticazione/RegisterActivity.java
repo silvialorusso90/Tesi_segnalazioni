@@ -29,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     EditText mNome;
+    EditText mCognome;
     EditText mEmail;
     EditText mPassword;
     EditText mConfermaPassword;
@@ -43,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_reg);
 
         //Inizializza la User Interface
         initUI();
@@ -55,12 +56,13 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void initUI() {
         mNome = (EditText)findViewById(R.id.etRegName);
+        mCognome = (EditText) findViewById(R.id.etRegCognome);
         mEmail = (EditText)findViewById(R.id.etRegEmail);
         mPassword = (EditText)findViewById(R.id.etRegPass);
         mConfermaPassword = (EditText)findViewById(R.id.etRegPassConf);
     }
 
-    private void createFirebaseUser(String email, String password, final String nome){
+    private void createFirebaseUser(String email, String password, final String nome, final String cognome){
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -75,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
                             salvaNome();
 
                             //carica il nome in firebase
-                            setNome(nome);
+                            setNome(nome + " " + cognome);
 
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                             //libera la memoria di RegisterActivity
@@ -97,8 +99,10 @@ public class RegisterActivity extends AppCompatActivity {
     //salvare il campo nome nelle SharedPreferences
     private void salvaNome(){
         String nome = mNome.getText().toString();
+        String cognome = mCognome.getText().toString();
+        String nomeCompleto = nome + cognome;
         SharedPreferences prefs = getSharedPreferences(CHAT_PREFS, 0);
-        prefs.edit().putString(NOME_KEY, nome).apply();
+        prefs.edit().putString(NOME_KEY, nomeCompleto).apply();
     }
 
     private void setNome(String nome){
@@ -129,6 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void btnRegistratiClick(View view) {
 
         String nome = mNome.getText().toString();
+        String cognome = mCognome.getText().toString();
         String email = mEmail.getText().toString();
         String password = mPassword.getText().toString();
 
@@ -136,6 +141,10 @@ public class RegisterActivity extends AppCompatActivity {
         if(!nomeValido(nome)){
             Toast.makeText(this,"Il nome deve contenere almeno 3 lettere", Toast.LENGTH_SHORT).show();
         }
+        else if(!cognomeValido(cognome)){
+            Toast.makeText(this,"Il cognome deve contenere almeno 4 lettere", Toast.LENGTH_SHORT).show();
+        }
+
         else if(!emailValida(email)){
             Toast.makeText(this,"L'email deve contenere la @", Toast.LENGTH_SHORT).show();
         }
@@ -143,7 +152,7 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this,"La password deve avere almeno 8 caratteri", Toast.LENGTH_SHORT).show();
         }
         else {
-            createFirebaseUser(email, password, nome);
+            createFirebaseUser(email, password, nome, cognome);
         }
     }
 
@@ -158,6 +167,14 @@ public class RegisterActivity extends AppCompatActivity {
     //il nome deve avere almeno 3 lettere
     private boolean nomeValido(String nome){
         if (nome.length() > 2)
+            return true;
+        else
+            return false;
+    }
+
+    //il cognome deve avere almeno 4 lettere
+    private boolean cognomeValido(String cognome){
+        if (cognome.length() > 3)
             return true;
         else
             return false;
