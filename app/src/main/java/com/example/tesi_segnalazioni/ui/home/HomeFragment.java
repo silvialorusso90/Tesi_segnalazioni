@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import com.example.tesi_segnalazioni.BottomSheet;
 import com.example.tesi_segnalazioni.LocationHelper;
 import com.example.tesi_segnalazioni.R;
 import com.example.tesi_segnalazioni.segnalazioni.IncidenteActivity;
+import com.example.tesi_segnalazioni.speech.SpeechActivity;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -58,7 +60,22 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
+//TextToSpeech t1;
+//in oncreate
+/*t1 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR)
+                    t1.setLanguage(Locale.ITALY);
+            }
+        });
+
+ */
+
+//t1.speak(voice, TextToSpeech.QUEUE_FLUSH, null);
 public class HomeFragment extends Fragment implements OnMapReadyCallback{
+
+    TextToSpeech ts;
 
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
 
@@ -73,6 +90,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
     ImageButton mVoicebtn;
 
     DatabaseReference myRef;
+
+    TextToSpeech t1;
+    String voceAscoltata;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -102,10 +122,24 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
 
         myRef = FirebaseDatabase.getInstance().getReference();
 
+
+        ts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR)
+                    ts.setLanguage(Locale.ITALY);
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //passa all'activity
+                Intent i = new Intent(getContext(), SpeechActivity.class);
+                startActivity(i);
+                //t1.speak(voice, TextToSpeech.QUEUE_FLUSH, null);
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
 
@@ -162,7 +196,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Dimmi qualcosa");
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Dimmi");
 
         //start intent
         try {
@@ -189,19 +223,31 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback{
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
                     //set to textview
-                    String voice = result.get(0);
+                    voceAscoltata = result.get(0);
+                    Toast.makeText(getContext(), voceAscoltata, Toast.LENGTH_SHORT).show();
 
-                    if(/*mTextTv.getText().toString()*/(voice.equals("Incidente")) || (voice.equals("incidente"))){
-                        Intent i = new Intent(getContext(), IncidenteActivity.class);
-                        startActivity(i);
+                    if(/*mTextTv.getText().toString()*/(voceAscoltata.equals("Incidente")) || (voceAscoltata.equals("incidente"))){
+                        //passa all'activity incidente
+                        //Intent i = new Intent(getContext(), IncidenteActivity.class);
+                        //startActivity(i);
+                        ts.speak("Inserisci la gravità: bassa, media, alta", TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    else
+                        ts.speak("cosa hai detto?", TextToSpeech.QUEUE_FLUSH, null);
+
+
+                    //NON MI STA PIù ASCOLTANDO, HA CHIUSO IL LISTENER
+
+                    if ((voceAscoltata.equals("Bassa")) || (voceAscoltata.equals("bassa"))){
+                        ts.speak("hai detto bassa", TextToSpeech.QUEUE_FLUSH, null);
                     }
                 }
-                break;
             }
-
+            break;
         }
 
     }
+
 
 
     @Override

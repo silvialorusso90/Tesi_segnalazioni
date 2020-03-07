@@ -65,6 +65,7 @@ public class NavigationActivity extends AppCompatActivity{
 
         View headerViewImg = navigationView.getHeaderView(0);
         ImageView imgProfile = (ImageView) headerViewImg.findViewById(R.id.img_profile);
+        imgProfile.setVisibility(View.INVISIBLE);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.

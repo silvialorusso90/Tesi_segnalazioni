@@ -68,12 +68,14 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(i);
 
         }
-        else{
+        /*else{
             Toast.makeText(this, "non ci sono utenti", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(this, RegisterActivity.class);
             finish();
             startActivity(i);
         }
+
+         */
 
 
 
